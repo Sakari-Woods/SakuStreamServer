@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <enet/enet.h>
 #include <string>
+#include <windows.h>
+#include <dinput.h>
+#include <Simulate.h>
 
 ENetAddress address;
 ENetHost * server;
@@ -36,8 +39,8 @@ void shutdownServer() {
 
 void startListening() {
 	ENetEvent event;
-	// Refreshes once every 10 seconds.
-		while (enet_host_service(server, &event, 0) > 0)
+	// 5 minute connection timeout
+		while (enet_host_service(server, &event, 300000) > 0)
 		{
 			switch (event.type)
 			{
@@ -49,14 +52,22 @@ void startListening() {
 				break;
 
 			case ENET_EVENT_TYPE_RECEIVE:
-				printf("Packet received.");
-				printf("(Client) Message from server : %s\n", event.packet->data);
+				switch (event.packet->data[0]) {
+				case 'W': SimulateKeyDown(DIKEYBOARD_W); printf("W"); break;
+				case 'A': SimulateKeyDown(DIKEYBOARD_A); printf("A"); break;
+				case 'S': SimulateKeyDown(DIKEYBOARD_S); printf("S"); break;
+				case 'D': SimulateKeyDown(DIKEYBOARD_D); printf("D"); break;
+				case 'w': SimulateKeyUp(DIKEYBOARD_W); printf("w"); break;
+				case 'a': SimulateKeyUp(DIKEYBOARD_A); printf("a"); break;
+				case 's': SimulateKeyUp(DIKEYBOARD_S); printf("s"); break;
+				case 'd': SimulateKeyUp(DIKEYBOARD_D); printf("d"); break;
+				}
+
 				enet_packet_destroy(event.packet);
 				break;
 
 			case ENET_EVENT_TYPE_DISCONNECT:
 				printf("Disconnected.");
-				printf("%s disconnected.\n", event.peer->data);
 				//puts("Disconnection succeeded.");
 				//return;
 				break;
