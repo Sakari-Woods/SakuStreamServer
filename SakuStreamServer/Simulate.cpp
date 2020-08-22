@@ -1,4 +1,4 @@
-#include <Simulate.h>
+#include "Simulate.h"
 #include <dinput.h>
 
 INPUT ip;
